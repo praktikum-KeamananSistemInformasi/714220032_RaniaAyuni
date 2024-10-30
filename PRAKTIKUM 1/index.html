@@ -4,25 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analisis Enkripsi dan Deskripsi Data</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet"> <!-- Changed to Montserrat font -->
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #c3ecf7, #f3c4fb);
-            color: #333;
+            font-family: 'Montserrat', sans-serif; /* Updated font */
+            background: linear-gradient(135deg, #c3b0e3, #e1c6f5); /* Purple gradient background */
+            color: #fff; /* Change text color to white for better contrast */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            flex-direction: column;
             padding: 20px;
         }
         .container {
-            background-color: #fff;
+            background-color: #6b3f94; /* Darker purple for the container */
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 30px; /* More rounded corners for container */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
             max-width: 600px;
             width: 100%;
             text-align: center;
@@ -30,61 +29,64 @@
         }
         h1 {
             font-weight: 700;
-            color: #5a67d8;
-            font-size: 24px;
+            color: #f3e5f5; /* Light purple for the heading */
+            font-size: 28px; /* Larger heading size */
             margin-bottom: 15px;
         }
         label {
             display: block;
             font-weight: 500;
-            color: #444;
+            color: #f3e5f5; /* Light purple for labels */
             margin-top: 10px;
+            text-align: left; /* Left-align labels */
         }
         select, input[type="text"], textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px; /* Increased padding for better touch target */
             margin-top: 5px;
-            border-radius: 6px;
-            border: 1px solid #ced4da;
+            border-radius: 20px; /* More rounded corners for inputs */
+            border: 1px solid #c2a7d3; /* Light purple border */
             font-size: 14px;
             color: #495057;
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; /* Light background for input */
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         select:focus, input[type="text"]:focus, textarea:focus {
-            border-color: #5a67d8;
+            border-color: #f3e5f5; /* Focus border color */
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Focus effect */
         }
         .submit-btn, .update-btn, .decrypt-btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px; /* Increased padding for better touch target */
             font-size: 16px;
             font-weight: 500;
             color: white;
-            background-color: #5a67d8;
+            background-color: #5a67d8; /* Button color */
             border: none;
-            border-radius: 6px;
+            border-radius: 20px; /* More rounded corners for buttons */
             cursor: pointer;
             margin-top: 20px;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform for effect */
         }
         .submit-btn:hover, .update-btn:hover, .decrypt-btn:hover {
-            background-color: #434e9e;
+            background-color: #434e9e; /* Darker purple on hover */
+            transform: translateY(-2px); /* Lift effect on hover */
         }
         .data-output {
-            background-color: #f9f9f9;
+            background-color: #7a4b98; /* Light purple for data output box */
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 20px; /* More rounded corners for data output */
             margin-top: 20px;
-            color: #333;
+            color: #fff; /* Change text color to white for better visibility */
             text-align: left;
             font-size: 14px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
         .data-output h3 {
-            color: #5a67d8;
+            color: #f3e5f5; /* Light purple for subheadings */
             font-size: 18px;
-            margin-bottom: 5px;
+            margin-bottom: 10px; /* Added spacing */
         }
         table {
             width: 100%;
@@ -96,11 +98,14 @@
             text-align: left;
         }
         th, td {
-            padding: 8px;
+            padding: 10px; /* Increased padding for better spacing */
         }
         th {
-            background-color: #5a67d8;
+            background-color: #5a67d8; /* Button color for table headers */
             color: white;
+        }
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.1); /* Zebra stripes for table */
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
