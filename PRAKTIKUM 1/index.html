@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis DREAD untuk Aset</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #c3ecf7, #f3c4fb);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        h1 {
+            font-weight: 700;
+            color: #5a67d8;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 500;
+            color: #444;
+            margin-top: 10px;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            font-size: 14px;
+            color: #495057;
+            background-color: #f8f9fa;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        select:focus, input[type="number"]:focus {
+            border-color: #5a67d8;
+        }
+        .generate-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            color: white;
+            background-color: #5a67d8;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .generate-btn:hover {
+            background-color: #434e9e;
+        }
+        #chart-container {
+            margin-top: 30px;
+        }
+        .risk-description {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #333;
+            text-align: left;
+            font-size: 14px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .risk-description h3 {
+            color: #5a67d8;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Analisis DREAD untuk Aset</h1>
+
+        <label for="asset">Pilih Aset</label>
+        <select id="asset">
+            <option value="">Pilih Aset</option>
+            <option value="server">Server</option>
+            <option value="database">Database</option>
+            <option value="data pengguna">Data Pengguna</option>
+            <option value="api">API</option>
+        </select>
+
+        <label for="stride">Kategori STRIDE</label>
+        <select id="stride">
+            <option value="">Pilih Ancaman STRIDE</option>
+            <option value="tampering">Tampering</option>
+            <option value="information-disclosure">Information Disclosure</option>
+            <option value="dos">Denial of Service</option>
+            <option value="elevation">Elevation of Privilege</option>
+            <option value="spoofing">Spoofing</option>
+        </select>
+
+        <label for="damage">Damage</label>
+        <input type="number" id="damage" min="0" max="10" placeholder="0-10">
+
+        <label for="reproducibility">Reproducibility</label>
+        <input type="number" id="reproducibility" min="0" max="10" placeholder="0-10">
+
+        <label for="exploitability">Exploitability</label>
+        <input type="number" id="exploitability" min="0" max="10" placeholder="0-10">
+
+        <label for="affected-users">Affected Users</label>
+        <input type="number" id="affected-users" min="0" max="10" placeholder="0-10">
+
+        <label for="discoverability">Discoverability</label>
+        <input type="number" id="discoverability" min="0" max="10" placeholder="0-10">
+
+        <button class="generate-btn" onclick="generateChart()">Generate Grafik</button>
+
+        <div id="chart-container" style="display: none;">
+            <canvas id="chart" width="400" height="400"></canvas>
+        </div>
+
+        <div id="risk-description" class="risk-description" style="display: none;">
+            <h3>Deskripsi Ancaman</h3>
+            <p id="threat-description"></p>
+            <h3>Tingkat Risiko</h3>
+            <p id="risk-level"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function getDreadScores() {
+            const asset = document.getElementById("asset").value;
+            const stride = document.getElementById("stride").value;
+            const damage = parseInt(document.getElementById("damage").value) || 0;
+            const reproducibility = parseInt(document.getElementById("reproducibility").value) || 0;
+            const exploitability = parseInt(document.getElementById("exploitability").value) || 0;
+            const affectedUsers = parseInt(document.getElementById("affected-users").value) || 0;
+            const discoverability = parseInt(document.getElementById("discoverability").value) || 0;
+
+            if (!asset || !stride || damage === 0 || reproducibility === 0 || exploitability === 0 || affectedUsers === 0 || discoverability === 0) {
+                alert("Silakan lengkapi semua field untuk melihat hasil grafik.");
+                return null;
+            }
+
+            const dreadScore = (damage + reproducibility + exploitability + affectedUsers + discoverability) / 5;
+            return { dreadScore, damage, reproducibility, exploitability, affectedUsers, discoverability, asset, stride };
+        }
+
+        function generateChart() {
+            const dreadScores = getDreadScores();
+            if (!dreadScores) return;
+
+            const { damage, reproducibility, exploitability, affectedUsers, discoverability, dreadScore, stride } = dreadScores;
+
+            const ctx = document.getElementById("chart").getContext("2d");
+            document.getElementById("chart-container").style.display = "block";
+            new Chart(ctx, {
+                type: "radar",
+                data: {
+                    labels: ["Damage", "Reproducibility", "Exploitability", "Affected Users", "Discoverability"],
+                    datasets: [{
+                        label: "DREAD Score",
+                        data: [damage, reproducibility, exploitability, affectedUsers, discoverability],
+                        backgroundColor: "rgba(90, 103, 216, 0.5)",
+                        borderColor: "rgba(90, 103, 216, 1)",
+                        pointBackgroundColor: "rgba(90, 103, 216, 1)",
+                        pointBorderColor: "#fff",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            grid: {
+                                color: "rgba(108, 117, 125, 0.2)"
+                            },
+                            angleLines: {
+                                color: "rgba(108, 117, 125, 0.2)"
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#333',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById("risk-description").style.display = "block";
+            document.getElementById("threat-description").innerText = `Ancaman "${stride}" yang dipilih berkaitan dengan risiko yang spesifik terhadap ${dreadScores.asset}, memiliki potensi ancaman signifikan bergantung pada skor DREAD.`;
+            
+            let riskLevel;
+            if (dreadScore >= 7) {
+                riskLevel = "Tinggi";
+            } else if (dreadScore >= 4) {
+                riskLevel = "Sedang";
+            } else {
+                riskLevel = "Rendah";
+            }
+            document.getElementById("risk-level").innerText = `Tingkat Risiko: ${riskLevel} (Skor DREAD rata-rata: ${dreadScore.toFixed(2)})`;
+        }
+    </script>
+</body>
+</html>
