@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisis DREAD untuk Aset</title>
+    <title>Analisis Enkripsi dan Deskripsi Data</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -23,7 +23,7 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            max-width: 400px;
+            max-width: 600px;
             width: 100%;
             text-align: center;
             animation: fadeIn 0.6s ease-in-out;
@@ -40,7 +40,7 @@
             color: #444;
             margin-top: 10px;
         }
-        select, input[type="number"] {
+        select, input[type="text"], textarea {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -52,10 +52,10 @@
             outline: none;
             transition: border-color 0.3s;
         }
-        select:focus, input[type="number"]:focus {
+        select:focus, input[type="text"]:focus, textarea:focus {
             border-color: #5a67d8;
         }
-        .generate-btn {
+        .submit-btn, .update-btn, .decrypt-btn {
             width: 100%;
             padding: 12px;
             font-size: 16px;
@@ -68,13 +68,10 @@
             margin-top: 20px;
             transition: background-color 0.3s ease;
         }
-        .generate-btn:hover {
+        .submit-btn:hover, .update-btn:hover, .decrypt-btn:hover {
             background-color: #434e9e;
         }
-        #chart-container {
-            margin-top: 30px;
-        }
-        .risk-description {
+        .data-output {
             background-color: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
@@ -84,10 +81,26 @@
             font-size: 14px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
-        .risk-description h3 {
+        .data-output h3 {
             color: #5a67d8;
             font-size: 18px;
             margin-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th, td {
+            padding: 8px;
+        }
+        th {
+            background-color: #5a67d8;
+            color: white;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
@@ -97,138 +110,91 @@
 </head>
 <body>
     <div class="container">
-        <h1>Analisis DREAD untuk Aset</h1>
+        <h1>Enkripsi dan Deskripsi Data</h1>
 
-        <label for="asset">Pilih Aset</label>
-        <select id="asset">
-            <option value="">Pilih Aset</option>
-            <option value="server">Server</option>
-            <option value="database">Database</option>
-            <option value="data pengguna">Data Pengguna</option>
-            <option value="api">API</option>
+        <label for="encryption-method">Metode Enkripsi</label>
+        <select id="encryption-method">
+            <option value="">Pilih Metode Enkripsi</option>
+            <option value="aes">AES</option>
+            <option value="rsa">RSA</option>
+            <option value="des">DES</option>
+            <option value="blowfish">Blowfish</option>
         </select>
 
-        <label for="stride">Kategori STRIDE</label>
-        <select id="stride">
-            <option value="">Pilih Ancaman STRIDE</option>
-            <option value="tampering">Tampering</option>
-            <option value="information-disclosure">Information Disclosure</option>
-            <option value="dos">Denial of Service</option>
-            <option value="elevation">Elevation of Privilege</option>
-            <option value="spoofing">Spoofing</option>
-        </select>
+        <label for="data-input">Masukkan Data</label>
+        <textarea id="data-input" placeholder="Masukkan data yang akan dienkripsi" rows="4"></textarea>
 
-        <label for="damage">Damage</label>
-        <input type="number" id="damage" min="0" max="10" placeholder="0-10">
+        <button class="submit-btn" onclick="processData()">Proses Data</button>
+        <button class="update-btn" onclick="updateData()" style="display: none;">Perbarui Data</button>
+        <button class="decrypt-btn" onclick="decryptData()" style="display: none;">Deskripsi Data</button>
 
-        <label for="reproducibility">Reproducibility</label>
-        <input type="number" id="reproducibility" min="0" max="10" placeholder="0-10">
-
-        <label for="exploitability">Exploitability</label>
-        <input type="number" id="exploitability" min="0" max="10" placeholder="0-10">
-
-        <label for="affected-users">Affected Users</label>
-        <input type="number" id="affected-users" min="0" max="10" placeholder="0-10">
-
-        <label for="discoverability">Discoverability</label>
-        <input type="number" id="discoverability" min="0" max="10" placeholder="0-10">
-
-        <button class="generate-btn" onclick="generateChart()">Generate Grafik</button>
-
-        <div id="chart-container" style="display: none;">
-            <canvas id="chart" width="400" height="400"></canvas>
-        </div>
-
-        <div id="risk-description" class="risk-description" style="display: none;">
-            <h3>Deskripsi Ancaman</h3>
-            <p id="threat-description"></p>
-            <h3>Tingkat Risiko</h3>
-            <p id="risk-level"></p>
+        <div id="data-output" class="data-output" style="display: none;">
+            <h3>Informasi Data</h3>
+            <table>
+                <tr>
+                    <th>Data Asli</th>
+                    <th>Data Terenkripsi</th>
+                    <th>Data Dideskripsi</th>
+                </tr>
+                <tr>
+                    <td id="original-data"></td>
+                    <td id="encrypted-data"></td>
+                    <td id="decrypted-data"></td>
+                </tr>
+            </table>
+            <h3>Deskripsi Data</h3>
+            <p id="data-description">Data yang dienkripsi dan dideskripsi menunjukkan bagaimana informasi asli dapat dilindungi dan kemudian dikembalikan ke bentuk aslinya. Proses ini penting untuk menjaga keamanan data dalam penyimpanan dan transmisi.</p>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        function getDreadScores() {
-            const asset = document.getElementById("asset").value;
-            const stride = document.getElementById("stride").value;
-            const damage = parseInt(document.getElementById("damage").value) || 0;
-            const reproducibility = parseInt(document.getElementById("reproducibility").value) || 0;
-            const exploitability = parseInt(document.getElementById("exploitability").value) || 0;
-            const affectedUsers = parseInt(document.getElementById("affected-users").value) || 0;
-            const discoverability = parseInt(document.getElementById("discoverability").value) || 0;
+        let currentEncryptedData = '';
+        let originalData = '';
 
-            if (!asset || !stride || damage === 0 || reproducibility === 0 || exploitability === 0 || affectedUsers === 0 || discoverability === 0) {
-                alert("Silakan lengkapi semua field untuk melihat hasil grafik.");
-                return null;
+        function processData() {
+            const method = document.getElementById("encryption-method").value;
+            const data = document.getElementById("data-input").value;
+
+            if (!method || !data) {
+                alert("Silakan lengkapi semua field untuk memproses data.");
+                return;
             }
 
-            const dreadScore = (damage + reproducibility + exploitability + affectedUsers + discoverability) / 5;
-            return { dreadScore, damage, reproducibility, exploitability, affectedUsers, discoverability, asset, stride };
+            // Simulasi enkripsi dan deskripsi sederhana
+            originalData = data; // Simpan data asli
+            currentEncryptedData = btoa(data); // enkripsi sederhana
+            const decryptedData = atob(currentEncryptedData); // deskripsi sederhana
+
+            document.getElementById("data-output").style.display = "block";
+            document.getElementById("original-data").innerText = originalData;
+            document.getElementById("encrypted-data").innerText = currentEncryptedData;
+            document.getElementById("decrypted-data").innerText = decryptedData;
+
+            document.querySelector('.update-btn').style.display = 'block'; // Menampilkan tombol perbarui
+            document.querySelector('.decrypt-btn').style.display = 'block'; // Menampilkan tombol deskripsi
         }
 
-        function generateChart() {
-            const dreadScores = getDreadScores();
-            if (!dreadScores) return;
+        function updateData() {
+            const newData = document.getElementById("data-input").value;
 
-            const { damage, reproducibility, exploitability, affectedUsers, discoverability, dreadScore, stride } = dreadScores;
-
-            const ctx = document.getElementById("chart").getContext("2d");
-            document.getElementById("chart-container").style.display = "block";
-            new Chart(ctx, {
-                type: "radar",
-                data: {
-                    labels: ["Damage", "Reproducibility", "Exploitability", "Affected Users", "Discoverability"],
-                    datasets: [{
-                        label: "DREAD Score",
-                        data: [damage, reproducibility, exploitability, affectedUsers, discoverability],
-                        backgroundColor: "rgba(90, 103, 216, 0.5)",
-                        borderColor: "rgba(90, 103, 216, 1)",
-                        pointBackgroundColor: "rgba(90, 103, 216, 1)",
-                        pointBorderColor: "#fff",
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 10,
-                            grid: {
-                                color: "rgba(108, 117, 125, 0.2)"
-                            },
-                            angleLines: {
-                                color: "rgba(108, 117, 125, 0.2)"
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                color: '#333',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            document.getElementById("risk-description").style.display = "block";
-            document.getElementById("threat-description").innerText = `Ancaman "${stride}" yang dipilih berkaitan dengan risiko yang spesifik terhadap ${dreadScores.asset}, memiliki potensi ancaman signifikan bergantung pada skor DREAD.`;
-            
-            let riskLevel;
-            if (dreadScore >= 7) {
-                riskLevel = "Tinggi";
-            } else if (dreadScore >= 4) {
-                riskLevel = "Sedang";
-            } else {
-                riskLevel = "Rendah";
+            if (!newData) {
+                alert("Silakan masukkan data baru untuk memperbarui.");
+                return;
             }
-            document.getElementById("risk-level").innerText = `Tingkat Risiko: ${riskLevel} (Skor DREAD rata-rata: ${dreadScore.toFixed(2)})`;
+
+            // Perbarui data dengan enkripsi baru
+            currentEncryptedData = btoa(newData); // enkripsi sederhana baru
+            originalData = newData; // Perbarui data asli
+
+            // Tampilkan hasil baru
+            document.getElementById("original-data").innerText = originalData;
+            document.getElementById("encrypted-data").innerText = currentEncryptedData;
+        }
+
+        function decryptData() {
+            // Mendapatkan data terenkripsi dan mendekode
+            const decryptedData = atob(currentEncryptedData);
+            document.getElementById("decrypted-data").innerText = decryptedData;
         }
     </script>
 </body>
